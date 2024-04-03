@@ -1,16 +1,19 @@
-import ClientActions from './lib/ClientActions'
 import HTMLElements from './lib/HTMLElements'
-import type { Choice, Choices, Result } from './types/types'
+import Bot from './lib/models/Bot'
+import Result from './lib/models/Result'
+import User from './lib/models/User'
+import type { Choices } from './types/types'
 
 class Main extends HTMLElements {
-   userChoice: Choice | null = null
-   botChoice: Choice | null = null
-   gameResult: Result | null = null
-   clientActions!: ClientActions
+   user: User
+   bot: Bot
+   result: Result
 
    constructor() {
       super()
-      this.clientActions = new ClientActions()
+      this.user = new User()
+      this.bot = new Bot()
+      this.result = new Result()
    }
 
    init() {
@@ -31,13 +34,12 @@ class Main extends HTMLElements {
    }
 
    onUserCheck(inputValue: Choices) {
-      this.userChoice = {
-         value: inputValue,
-         icon: this.clientActions.getChoiceIcon(inputValue)
-      }
+      this.user.setValue(inputValue)
 
-      if (this.userChoice) this.$submitButton.disabled = false
-      this.$checkboxs?.forEach(el => (el.value !== this.userChoice?.value) ? el.checked = false : null)
+      this.$submitButton.disabled = false
+      this.$checkboxs.forEach($el => {
+         if ($el.value !== this.user?.value) $el.checked = false
+      })
    }
 
    onSubmit() {
@@ -46,26 +48,16 @@ class Main extends HTMLElements {
       setTimeout(() => {
          this.loaderAction('remove')
 
-         const botChoice = this.clientActions.getRandomChoice()
-         this.botChoice = {
-            value: botChoice,
-            icon: this.clientActions.getChoiceIcon(botChoice)
-         }
+         this.bot.getRandomChoice()
 
-         if (!this.userChoice || !this.botChoice) throw new Error('Choice not found')
+         if (!this.user.value) throw new Error('User choice not found')
+         if (!this.bot.value) throw new Error('Bot choice not found')
 
-         this.gameResult = this.clientActions.evaluateResult({
-            userChoice: this.userChoice,
-            botChoice: this.botChoice
-         })
+         this.result.evaluateResult(this.user.value, this.bot.value)
 
-         this.clientActions.renderResult({
-            userChoice: this.userChoice,
-            botChoice: this.botChoice,
-            gameResult: this.gameResult
-         })
+         this.renderResult(this.user, this.bot, this.result)
 
-         this.onLoadingComplete()
+         this.onFinish()
       }, 1500)
    }
 
@@ -81,14 +73,26 @@ class Main extends HTMLElements {
       this.$submitButton.disabled = true
    }
 
-   onLoadingComplete() {
-      if (this.userChoice && this.botChoice) {
+   onFinish() {
+      if (this.user && this.bot) {
          this.$checkboxList?.forEach(el => el.style.display = 'block')
-         this.userChoice = null
+
+         this.user.reset()
+         this.bot.reset()
+         this.result.reset()
 
          this.$checkboxs?.forEach(el => el.checked = false)
          this.$submitButton.disabled = true
       }
+   }
+
+   renderResult(user: User, bot: Bot, result: Result) {
+      this.$userChoice.textContent = `🧑 Elegiste ${user.icon} ${user.value}`
+      this.$botChoice.textContent = `El 🤖 eligió ${bot.icon} ${bot.value}`
+      this.$submitButton.textContent = 'Reintentar'
+
+      this.$gameResult.textContent = result.message
+      this.$gameResult.style.color = result.messageColor
    }
 }
 
