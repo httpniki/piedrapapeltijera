@@ -1,138 +1,95 @@
+import ClientActions from './lib/ClientActions'
 import HTMLElements from './lib/HTMLElements'
-import type { Choice, ChoiceProps, Choices, Result } from './types/types'
-
-const gameChoice = {
-   Piedra: {
-      win: 'Tijera',
-      lose: 'Papel'
-   },
-   Papel: {
-      win: 'Piedra',
-      lose: 'Tijera'
-   },
-   Tijera: {
-      win: 'Papel',
-      lose: 'Piedra'
-   }
-}
+import type { Choice, Choices, Result } from './types/types'
 
 class Main extends HTMLElements {
    userChoice: Choice | null = null
    botChoice: Choice | null = null
-   gameResult: Result = {
-      win: null,
-      message: '',
-      messageColor: '#ffffff'
-   }
+   gameResult: Result | null = null
+   clientActions!: ClientActions
 
    constructor() {
       super()
-      this.setup()
+      this.clientActions = new ClientActions()
    }
 
-   setup() {
+   init() {
       this.getFormElements()
 
-      this.$form?.addEventListener('input', (event) => {
-         const target = event.target as HTMLInputElement
-         const value = target.value as Choices
+      this.$form.addEventListener('input', (event) => {
+         if ((event.target as HTMLInputElement).type === 'checkbox') {
+            const value = (event.target as HTMLInputElement).value as Choices
 
-         this.userChoice = {
-            value,
-            icon: this.getChoiceIcon(value)
+            this.onUserCheck(value)
          }
-
-         this.$submit.disabled = false
-         this.$checkboxs?.forEach(el => (el.value !== this.userChoice?.value) ? el.checked = false : null)
       })
 
-      this.$submit?.addEventListener('click', (event) => {
+      this.$submitButton?.addEventListener('click', (event) => {
          event.preventDefault()
-         this.$userChoose.textContent = ''
-         this.$result.textContent = ''
-         this.$subtitle.style.display = 'none'
-         this.$botResponse.textContent = 'Eligiendo...'
-
-         this.$li?.forEach(el => el.style.display = 'none')
-         this.$submit.disabled = true
-
-         setTimeout(() => {
-            const botChoice = this.getRandomChoice()
-            this.botChoice = {
-               value: botChoice,
-               icon: this.getChoiceIcon(botChoice)
-            }
-
-            if (this.userChoice && this.botChoice) {
-               this.$li?.forEach(el => el.style.display = 'block')
-
-               this.evaluateResult()
-               this.renderResult()
-               this.resetState()
-            }
-         }, 1000)
+         this.onSubmit()
       })
    }
 
-   private resetState() {
-      this.$submit.disabled = true
-      this.$checkboxs?.forEach(el => el.checked = false)
-      this.userChoice = null
-   }
-
-   getChoiceIcon(choice: Choices) {
-      if (choice === 'Piedra') return '🪨'
-      if (choice === 'Papel') return '🧻'
-      if (choice === 'Tijera') return '✂️'
-
-      return '>.<'
-   }
-
-   private getRandomChoice(): Choices {
-      const randomNumber = Math.ceil(Math.random() * 3) - 1
-      const choices = Object.keys(gameChoice)
-      const randomChoice = choices[randomNumber] as Choices
-
-      return randomChoice
-   }
-
-   private evaluateResult() {
-      const userChoiceProps = gameChoice[this.userChoice?.value as Choices] as ChoiceProps
-
-      if (this.userChoice === this.botChoice) {
-         this.gameResult = {
-            win: null,
-            message: 'Empate >.<',
-            messageColor: '#ecf542'
-         }
+   onUserCheck(inputValue: Choices) {
+      this.userChoice = {
+         value: inputValue,
+         icon: this.clientActions.getChoiceIcon(inputValue)
       }
 
-      if (userChoiceProps.win === this.botChoice?.value) {
-         this.gameResult = {
-            win: true,
-            message: 'Ganaste :D',
-            messageColor: '#42f545'
-         }
-      }
-
-      if (userChoiceProps.lose === this.botChoice?.value) {
-         this.gameResult = {
-            win: false,
-            message: 'Perdiste :(',
-            messageColor: '#CC0000'
-         }
-      }
+      if (this.userChoice) this.$submitButton.disabled = false
+      this.$checkboxs?.forEach(el => (el.value !== this.userChoice?.value) ? el.checked = false : null)
    }
 
-   private renderResult() {
-      this.$botResponse.textContent = `El bot eligio ${this.botChoice?.icon} ${this.botChoice?.value}`
-      this.$userChoose.textContent = `Elegiste ${this.userChoice?.icon} ${this.userChoice?.value}`
-      this.$submit.textContent = 'Reintentar'
+   onSubmit() {
+      this.onLoading()
 
-      this.$result.textContent = this.gameResult.message
-      this.$result.style.color = this.gameResult.messageColor
+      setTimeout(() => {
+         this.loaderAction('remove')
+
+         const botChoice = this.clientActions.getRandomChoice()
+         this.botChoice = {
+            value: botChoice,
+            icon: this.clientActions.getChoiceIcon(botChoice)
+         }
+
+         if (!this.userChoice || !this.botChoice) throw new Error('Choice not found')
+
+         this.gameResult = this.clientActions.evaluateResult({
+            userChoice: this.userChoice,
+            botChoice: this.botChoice
+         })
+
+         this.clientActions.renderResult({
+            userChoice: this.userChoice,
+            botChoice: this.botChoice,
+            gameResult: this.gameResult
+         })
+
+         this.onLoadingComplete()
+      }, 1500)
+   }
+
+   onLoading() {
+      this.loaderAction('insert')
+
+      this.$userChoice.textContent = ''
+      this.$botChoice.textContent = ''
+      this.$gameResult.textContent = ''
+      this.$subtitle.style.display = 'none'
+
+      this.$checkboxList?.forEach(el => el.style.display = 'none')
+      this.$submitButton.disabled = true
+   }
+
+   onLoadingComplete() {
+      if (this.userChoice && this.botChoice) {
+         this.$checkboxList?.forEach(el => el.style.display = 'block')
+         this.userChoice = null
+
+         this.$checkboxs?.forEach(el => el.checked = false)
+         this.$submitButton.disabled = true
+      }
    }
 }
 
-new Main()
-
+new Main().init()
