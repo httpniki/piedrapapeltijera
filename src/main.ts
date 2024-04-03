@@ -87,7 +87,7 @@ class Main extends HTMLElements {
    }
 
    renderResult(user: User, bot: Bot, result: Result) {
-      this.$userChoice.textContent = `🧑 Elegiste ${user.icon} ${user.value}`
+      this.$userChoice.textContent = `Elegiste ${user.icon} ${user.value}`
       this.$botChoice.textContent = `El 🤖 eligió ${bot.icon} ${bot.value}`
       this.$submitButton.textContent = 'Reintentar'
 
