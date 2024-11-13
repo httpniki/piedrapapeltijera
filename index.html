@@ -6,58 +6,68 @@
    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
    <link rel="stylesheet" href='src/style.css' />
-   <title>Piedra Papel o Tijera</title>
+   <title>Piedra🪨 Papel🧻 o Tijera✂️</title>
 </head>
 
 <body>
    <main id="app">
       <h1 id="title">Piedra Papel o Tijera</h1>
 
+      <p id="loader">
+         <span>Eligiendo</span>
+         <span>.</span>
+         <span>.</span>
+         <span>.</span>
+      </p>
+
       <form>
-         <section>
-            <p id='subtitle'>Elegí una opcion:</p>
-            <p id="user-choice"></p>
-            <p id="bot-choice"></p>
-            <p id="result"> </p>
+         <section id="game-result">
+            <p id="user-choice">
+               >  Elegiste  
+               <span class="choice"></span>
+            </p>
+
+            <p id="bot-choice">
+               >  El 🤖 eligió  
+               <span class="choice"></span>
+            </p>
+
+            <p id="result"></p>
          </section>
 
-         <ul>
-            <li>
-               <label>
-                  <input type="checkbox" value='Piedra' />
-                  <p>🪨 Piedra</p>
-               </label>
-            </li>
-
-            <li>
-               <label>
-                  <input type="checkbox" value="Papel" />
-                  <p>🧻 Papel</p>
-               </label>
-            </li>
-
-            <li>
-               <label>
-                  <input type="checkbox" value="Tijera" />
-                  <p>✂️ Tijera</p>
-               </label>
-            </li>
-         </ul>
-
-         <button id='submit' disabled>
-            Listo!
-         </button>
+         <section id="game">
+            <p id='subtitle'>Elegí una opción:</p>
+            
+            <ul id="game-choices">
+               <li>
+                  <label>
+                     <input class="user-choice" type="checkbox" value='Piedra' />
+                     <p>🪨 Piedra</p>
+                  </label>
+               </li>
+            
+               <li>
+                  <label>
+                     <input type="checkbox" value="Papel" />
+                     <p>🧻 Papel</p>
+                  </label>
+               </li>
+            
+               <li>
+                  <label>
+                     <input type="checkbox" value="Tijera" />
+                     <p>✂️ Tijera</p>
+                  </label>
+               </li>
+            </ul>
+            
+            <button id='submit-btn' disabled>
+               Listo!
+            </button>
+         </section>
       </form>
    </main>
 
-   <template>
-      <p id="loader">
-         <span>Eligiendo</span>
-         <span id="first-point">.</span>
-         <span id="second-point">.</span>
-         <span id="third-point">.</span>
-      </p>
-   </template>
    <script type="module" src="/src/main.ts"></script>
 </body>
 

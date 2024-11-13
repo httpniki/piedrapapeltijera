@@ -1,14 +1,17 @@
 export const gameChoice = {
    Piedra: {
       win: 'Tijera',
-      lose: 'Papel'
+      lose: 'Papel',
+      icon: '🪨'
    },
    Papel: {
       win: 'Piedra',
-      lose: 'Tijera'
+      lose: 'Tijera',
+      icon: '🧻'
    },
    Tijera: {
       win: 'Papel',
-      lose: 'Piedra'
+      lose: 'Piedra',
+      icon: '✂️'
    }
 }

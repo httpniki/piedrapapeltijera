@@ -1,5 +1,6 @@
 * {
    margin: 0;
+   box-sizing: border-box;
 }
 
 :root {
@@ -7,14 +8,15 @@
    line-height: 1.5;
    font-weight: 400;
 
-   color-scheme: light dark;
-   color: rgba(255, 255, 255, 0.87);
-   background-color: #242424;
+   color: rgba(255, 255, 255);
 
    font-synthesis: none;
    text-rendering: optimizeLegibility;
    -webkit-font-smoothing: antialiased;
    -moz-osx-font-smoothing: grayscale;
+
+   --color-background-primary: #595456;
+   --color-background-secondary: #292829;
 }
 
 a {
@@ -31,69 +33,133 @@ a:hover {
    display: flex;
    flex-direction: column;
    align-items: center;
+
    width: 100vw;
    height: 100vh;
+   padding: 10px;
+
+   background-color: var(--color-background-primary);
 }
 
 #title {
-   font-size: 2rem;
    margin: 3.8rem 0;
+
+   font-size: 2rem;
+   text-align: center;
+
+   text-shadow: 0 0 15px rgba(0, 0, 0, 0.9);
 }
 
-section {
-   display: flex;
+#subtitle {
+   font-size: 1.3125rem;
+   font-weight: bold;
+}
+
+#game-result {
+   display: none;
    flex-direction: column;
    gap: 1px;
+
+   font-size: 1.125rem;
+}
+
+
+#game {
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
 }
 
 form {
    display: flex;
    flex-direction: column;
    justify-items: center;
+
+   width: max-content;
+   height: max-content;
+   padding: 30px;
+   gap: 20px;
+
+   border-radius: 4px;
+   background-color: var(--color-background-secondary);
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.20);
 }
 
-form ul {
+#game-choices {
    display: flex;
    flex-direction: column;
-   padding: 0;
    gap: 2px;
-   list-style: none;
+
+   padding: 0;
    margin: 0.5rem 0;
+
+   list-style: none;
 }
 
-form li label {
+#game-choices li label {
    display: flex;
-   gap: 5px;
+   align-items: center;
+   gap: 8px;
+   font-size: 1.125rem;
+}
+
+#game-choices li input[type="checkbox"] {
+   width: 16px;   
+   height: 16px;
+}
+
+@keyframes jump {
+   25% {
+      translate: 0 -25%;
+   }
+}
+
+#submit-btn {
+   width: 100%;
+   padding: 6px 8px;
+   border: none;
+   border-radius: 4px;
+
+   font-size: 1rem;
+   cursor: pointer;
+}
+
+#submit-btn:hover:enabled {
+   background-color: rgba(255, 255, 255, 0.78);
+   border: none;
 }
 
 #loader {
-   display: flex;
+   display: none;
    gap: 3px;
+
+   font-size: 1.3125rem;
 }
 
-#loader #first-point {
+#loader span:nth-child(2) {
    animation-name: jump;
    animation-delay: 0s;
    animation-duration: 1.5s;
    animation-iteration-count: infinite;
 }
 
-#loader #second-point {
+#loader span:nth-child(3) {
    animation-name: jump;
    animation-delay: 0.5s;
    animation-duration: 1.5s;
    animation-iteration-count: infinite;
 }
 
-#loader #third-point {
+#loader span:nth-child(4) {
    animation-name: jump;
    animation-delay: 1s;
    animation-duration: 1.5s;
    animation-iteration-count: infinite;
 }
 
-@keyframes jump {
-   25% {
-      translate: 0 -25%;
+@media only screen and (width < 250px) {
+   form {
+      padding: 10px;
+      width: 100%;
    }
 }
